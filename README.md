@@ -1,4 +1,4 @@
-### Test Automation Framework Template
+# Test Automation Framework Template
 
 This gem will deploy/install a skeleton code framework for the automated testing of applications with APIs and/or web-UIs.
 
