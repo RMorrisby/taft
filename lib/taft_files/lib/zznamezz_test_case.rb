@@ -44,19 +44,68 @@ module ZZnamezzTestCase
     # method (if they have any relevent failure notes).
     attr_accessor :failure_notes
 
-    # By default, unknown methods (e.g. xxabbrevupperxxPage names) are sent to the different contexts 
-    # for resolution. This allows pages to be accessed as xxabbrevxxHomePage rather than
-    # @xxabbrevxx_context.xxabbrevxxHomePage
-    def method_missing(meth, *args)
-        case meth.to_s
-        when /^xxabbrevxx/
-            @xxabbrevxx_context.send(meth, *args)
-#        when /^some_other_app/
-#            @some_other_app_context.send(meth, *args)
-        else
-            super
-        end
+    @@defined_pages = {}
+
+    def store_page(page_symbol, page_object)
+      @@defined_pages[page_symbol] = page_object
     end
+
+    def page_stored?(page_symbol)
+      @@defined_pages.keys.include?(page_symbol)
+    end
+
+    def get_stored_page(page_symbol)
+      @@defined_pages[page_symbol]
+    end
+
+    # E.g. calling homepage.displayed? from a test script :
+    # Test cannot see homepage so its call is routed through method_missing
+    # If method_missing returns an instance of the class, .displayed? can be called on it (seamlessly)
+    # At present this will happen for every call to a page from a test script
+    # TODO : instantiate pages only if they have not yet been; save & return them instead of making new ones each time
+    # done, can make better?
+    # TODO : give the tests visibility of these objects
+    def method_missing(name, *args, &block)
+      # puts "ZZnamezz method_missing called; name = #{name.inspect}; #{name.class}"
+
+      case name.to_s
+      when /^browser$/ # TODO need better way of making browser visible to the framework
+        browser
+      when /^xxabbrevxx/i
+        #      puts "hompage exists? #{self.instance_variable_defined?(name)}" # #{defined? homepage} doesn't work #
+        # instance_variable_defined? isn't liked here
+        #            puts "hompage exists? #{self.respond_to?(name)} #{respond_to?(name)}"
+        stored = page_stored?(name)
+#        puts "Page #{name} stored? #{stored}"
+        if stored
+          page = get_stored_page(name)
+        else          
+#          derived_name = name.to_s.gsub(/^xxabbrevxx/, "Ceres")
+##          page = CeresCustom::Homepage.new
+#          page = eval("CeresCustom::#{derived_name}.new")
+          
+          page = @page.find(name.to_s) 
+          store_page(name, page)
+        end
+        page # always return the page so that the test can use it
+      else
+        super
+      end
+    end
+
+#     # By default, unknown methods (e.g. xxabbrevupperxxPage names) are sent to the different contexts 
+#     # for resolution. This allows pages to be accessed as xxabbrevxxHomePage rather than
+#     # @xxabbrevxx_context.xxabbrevxxHomePage
+#     def method_missing(meth, *args)
+#         case meth.to_s
+#         when /^xxabbrevxx/
+#             @xxabbrevxx_context.send(meth, *args)
+# #        when /^some_other_app/
+# #            @some_other_app_context.send(meth, *args)
+#         else
+#             super
+#         end
+#     end
 
 
     if $WRITE_RESULTS # supplied from invokation

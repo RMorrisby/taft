@@ -19,4 +19,8 @@ class ZZnamezzConfig
 
     PASSED = "Passed"
     FAILED = "Failed"
+
+    DISALLOWED_FIELD_NAMES = ["name"]
+
+    ALL_USER_ROLES = ["all"]
 end
