@@ -10,14 +10,12 @@ require_relative 'page_objects'
 
 class RSPages
 
-  attr_accessor :browser # the browser object
-  attr_accessor :pages # array of Page objects
-  attr_accessor :page_names # array of names of known Page objects
+  @@browser = nil
+  @@pages = [] # an array of Page objects
+  @@page_names = []
 
-  def initialize(browser)
-    @browser = browser
-    @pages = [] # an array of Page objects
-    @page_names = []
+  def self.make_pages(browser)
+    @@browser = browser
 
     # Google Search
     page = Page.new("googleSearch", "search_term_field")
@@ -25,7 +23,7 @@ class RSPages
     page.add_field("search_term", :text_field, :name, "q")
     page.add_field("search_button", :button, :name, "btnK")
 
-    add_page(page)
+    self.add_page(page)
  
     
     # Google Search Results
@@ -33,18 +31,18 @@ class RSPages
 
     page.add_field("result_stats", :div, :id, "resultStats")
 
-    add_page(page)
+    self.add_page(page)
   end
 
 ##################################################################################################
 
 
-  def add_page(page)
-    page.browser = @browser # set the browser object for each page
+  def self.add_page(page)
+    page.browser = @@browser # set the browser object for each page
     # TODO have only one browser object (here in XXabbrevupperPages), and have each page know how to find it, instead of taking
     # their own copy of the object
-    @pages << page
-    @page_names << page.name
+    @@pages << page
+    @@page_names << page.name
   end
 
   # TODO needed?
@@ -54,21 +52,21 @@ class RSPages
   # TODO needed?
   def to_s
     s = ""
-    s += "#{@pages.size} pages defined. Names :"
+    s += "#{@@pages.size} pages defined. Names :"
     @page_names.each {|f| s += "\n#{f}" }
     s
   end
 
   # Will convert name to a string
-  def page_known?(name)
-    @page_names.include?(name.to_s)
+  def self.page_known?(name)
+    @@page_names.include?(name.to_s)
   end
 
   # Retrieves the specific page; raises if it cannot be found
   # Will convert name to a string
-  def find(name)
-    raise "Could not locate page '#{name}'" unless page_known?(name)
-    @pages[@page_names.index(name.to_s)]
+  def self.find(name)
+    raise "Could not locate page '#{name}'" unless self.page_known?(name)
+    @@pages[@@page_names.index(name.to_s)]
   end
 end
 

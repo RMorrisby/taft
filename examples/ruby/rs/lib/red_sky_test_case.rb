@@ -36,8 +36,6 @@ end
 
 module RedSkyTestCase
 
-    #include RedSky
-
     attr_accessor :browser_has_been_opened
 
     # optional field
@@ -47,49 +45,23 @@ module RedSkyTestCase
     # method (if they have any relevent failure notes).
     attr_accessor :failure_notes
 
-
-    @@defined_pages = {}
-
-    def store_page(page_symbol, page_object)
-        puts "Page #{page_symbol} stored"
-      @@defined_pages[page_symbol] = page_object
-    end
-
-    def page_stored?(page_symbol)
-      @@defined_pages.keys.include?(page_symbol)
-    end
-
-    def get_stored_page(page_symbol)
-      @@defined_pages[page_symbol]
-    end
-
     # E.g. calling homepage.displayed? from a test script :
     # Test cannot see homepage so its call is routed through method_missing
     # If method_missing returns an instance of the class, .displayed? can be called on it (seamlessly)
     # At present this will happen for every call to a page from a test script
-    # TODO : instantiate pages only if they have not yet been; save & return them instead of making new ones each time
-    # done, can make better?
-    # TODO : give the tests visibility of these objects
     def method_missing(name, *args, &block)
-       #puts "RedSky method_missing called; name = #{name.inspect}; #{name.class}"
-
-      case name.to_s
-      when /^browser$/ # TODO need better way of making browser visible to the framework
-        browser
-      when /^rs/i, /^google/
-        stored = page_stored?(name)
-        if stored
-          page = get_stored_page(name)
-        else          
-          page = @page.find(name.to_s) 
-          store_page(name, page)
+        puts "RedSky method_missing called; name = #{name.inspect}; #{name.class}"
+ 
+        case name.to_s
+        when /^browser$/
+            browser
+        when /^rs/i, /^google/
+            RSPages.find(name.to_s) # return the page so that the helper-method can use it
+        else
+            super
         end
-        page # always return the page so that the test can use it
-      else
-        super
-      end
     end
-
+ 
     if $WRITE_RESULTS # supplied from invokation
         WRITE_RESULTS = true
     else
@@ -109,7 +81,8 @@ module RedSkyTestCase
     end
     
     def load_pages(browser)
-        @page = RSPages.new(browser) # cannot have pages without a browser object
+        RSPages.make_pages(browser) # cannot have pages without a browser object
+        @browser_has_been_opened = true
     end
 
     # Close the current browser

@@ -11,6 +11,21 @@ require "more_ruby"
 class RSHelper
     include Test::Unit::Assertions
 
+    # E.g. calling homepage.displayed? from a test script :
+    # Test cannot see homepage so its call is routed through method_missing
+    # If method_missing returns an instance of the class, .displayed? can be called on it (seamlessly)
+    # At present this will happen for every call to a page from a test script
+    def method_missing(name, *args, &block)
+        #puts "RSHelper method_missing called; name = #{name.inspect}; #{name.class}"
+
+        case name.to_s
+        when /^rs/i, /^google/
+            RSPages.find(name.to_s) # return the page so that the helper-method can use it
+        else
+            super
+        end
+    end
+
     # Reads in a file of CSV test data, e.g for use in data-driven tests
     def read_csv_test_data(filename)
         path = File.join(File.dirname(File.expand_path(__FILE__)) + "/../../../../tests/data", filename)

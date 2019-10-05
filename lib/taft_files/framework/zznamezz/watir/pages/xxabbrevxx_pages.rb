@@ -9,15 +9,13 @@
 require_relative 'page_objects'
 
 class XXabbrevupperxxPages
+  
+  @@browser = nil
+  @@pages = [] # an array of Page objects
+  @@page_names = []
 
-  attr_accessor :browser # the browser object
-  attr_accessor :pages # array of Page objects
-  attr_accessor :page_names # array of names of known Page objects
-
-  def initialize(browser)
-    @browser = browser
-    @pages = [] # an array of Page objects
-    @page_names = []
+  def self.make_pages(browser)
+    @@browser = browser
 
     # Nav bar
     # Not a real page, but is a panel common to many pages
@@ -33,7 +31,7 @@ class XXabbrevupperxxPages
     page.add_field("all_users", :link, :id, "users_header_link")
     page.add_page(nav_bar)
 
-    add_page(page)
+    self.add_page(page)
 
 
     # Users
@@ -43,7 +41,7 @@ class XXabbrevupperxxPages
     page.add_field("new_user", :link, :id, "new_user_link")
     page.add_page(nav_bar)
 
-    add_page(page)
+    self.add_page(page)
 
     # Create User
     page = Page.new("xxabbrevxxCreateUser", "page_title", "New user")
@@ -54,7 +52,7 @@ class XXabbrevupperxxPages
     page.add_field("back", :link, :id, "back_link")
     page.add_page(nav_bar)
 
-    add_page(page)
+    self.add_page(page)
 
     # View User
     page = Page.new("xxabbrevxxViewUser", "page_title", /^User/)
@@ -65,43 +63,39 @@ class XXabbrevupperxxPages
     page.add_field("back", :link, :id, "back_link")
     page.add_page(nav_bar)
 
-    add_page(page)
+    self.add_page(page)
  
   end
 
 ##################################################################################################
 
 
-  def add_page(page)
-    page.browser = @browser # set the browser object for each page
+  def self.add_page(page)
+    page.browser = @@browser # set the browser object for each page
     # TODO have only one browser object (here in XXabbrevupperxxPages), and have each page know how to find it, instead of taking
     # their own copy of the object
-    @pages << page
-    @page_names << page.name
+    @@pages << page
+    @@page_names << page.name
   end
 
-  # TODO needed?
-  def ==(o)
-  end
-
-  # TODO needed?
-  def to_s
+  # Outputs info on the pages currently stored
+  def self.info
     s = ""
-    s += "#{@pages.size} pages defined. Names :"
-    @page_names.each {|f| s += "\n#{f}" }
+    s += "#{@@pages.size} pages defined. Names :"
+    @@page_names.each {|f| s += "\n#{f}" }
     s
   end
 
   # Will convert name to a string
-  def page_known?(name)
-    @page_names.include?(name.to_s)
+  def self.page_known?(name)
+    @@page_names.include?(name.to_s)
   end
 
   # Retrieves the specific page; raises if it cannot be found
   # Will convert name to a string
-  def find(name)
-    raise "Could not locate page '#{name}'" unless page_known?(name)
-    @pages[@page_names.index(name.to_s)]
+  def self.find(name)
+    raise "Could not locate page '#{name}'" unless self.page_known?(name)
+    @@pages[@@page_names.index(name.to_s)]
   end
 end
 
