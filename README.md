@@ -14,6 +14,10 @@ This will prompt you for all pertinent parameters.
 TAFT deploys a skeleton code framework that attempts to cover several common test areas. These often include the use of additional libraries. To reduce deployment bloat, TAFT will **not** attempt to install those additional libraries. You must install them yourself (using your preferred lib-manager), or deactivate the skeleton code that calls these libraries.
 
 
+## Example code
+
+`examples/[language]` contains an example codebase generated from TAFT.
+
 ## TODO 
 
 * More languages : Java, Python, Golang
