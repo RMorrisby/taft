@@ -1,11 +1,8 @@
 
-
-
 class RSHelper
 
     def new_browser_at_url(url)
         puts "New browser at #{url}"
-        
         case RedSkyConfig::BROWSER
         when :chrome
             # Set detach to true so the browser remains open once the test finishes
@@ -14,7 +11,7 @@ class RSHelper
             b = Watir::Browser.new :chrome, :options => options
 
         when :firefox
-            # TODO
+            b = Watir::Browser.new :firefox
 
         end
 

@@ -15,8 +15,6 @@ require 'fileutils'
 require 'timeout'
 require 'watir'
 
-#p $LOAD_PATH
-
 # Config
 require 'config/red_sky_config.rb'
 
@@ -50,7 +48,7 @@ module RedSkyTestCase
     # If method_missing returns an instance of the class, .displayed? can be called on it (seamlessly)
     # At present this will happen for every call to a page from a test script
     def method_missing(name, *args, &block)
-        puts "RedSky method_missing called; name = #{name.inspect}; #{name.class}"
+        #puts "RedSkyTestCase method_missing called; name = #{name.inspect}; #{name.class}"
  
         case name.to_s
         when /^browser$/
@@ -61,7 +59,7 @@ module RedSkyTestCase
             super
         end
     end
- 
+
     if $WRITE_RESULTS # supplied from invokation
         WRITE_RESULTS = true
     else
@@ -107,6 +105,7 @@ module RedSkyTestCase
         end
     end
 
+
     @@browser = nil
 
     def browser
@@ -143,8 +142,7 @@ module RedSkyTestCase
         if @initialBrowser == :rs
             rs_login
         elsif (@initialBrowser == :none || @initialBrowser == nil)
-            @browser = nil
-            #reinitialiseRSContext(browser)
+            browser = nil
         end
 
     end # end setup
@@ -185,6 +183,7 @@ module RedSkyTestCase
                     puts "Notes : #{notes}"
                 end # end unless passed?
 
+                
                 # Write to the results file
                 begin
                     File.open(RedSkyConfig::RESULTS_CSV, "a") do |f|
@@ -196,7 +195,7 @@ module RedSkyTestCase
                     puts "Had to rescue from writing results to file #{RedSkyConfig::RESULTS_CSV}"
                 end
             end # end if WRITE_RESULTS
-
+            
             close_all_browsers
 
         rescue Timeout::Error => t_error

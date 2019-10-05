@@ -73,13 +73,14 @@ module ZZnamezzTestCase
     end
 
     def load_pages(browser)
-        @page = xxabbrevupperxxPages.new(browser) # cannot have pages without a browser object
+        xxabbrevupperxxPages.make_pages(browser) # cannot have pages without a browser object
+        $browsers << browser
         @browser_has_been_opened = true
     end
 
     # Close the current browser
     def close_browser
-        self.browser.close
+        browser.close
     end
 
     def close(browser)
@@ -137,7 +138,6 @@ module ZZnamezzTestCase
             xxabbrevxx_login
         elsif (@initialBrowser == :none || @initialBrowser == nil)
             browser = nil
-            #reinitialisexxabbrevupperxxContext(browser)
         end
 
     end # end setup

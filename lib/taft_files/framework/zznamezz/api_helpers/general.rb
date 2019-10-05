@@ -19,8 +19,6 @@ class XXabbrevupperxxHelper
         #puts "XXabbrevupperxxHelper method_missing called; name = #{name.inspect}; #{name.class}"
  
         case name.to_s
-        when /^browser$/
-            browser
         when /^xxabbrevxx/i
             RSPages.find(name.to_s) # return the page so that the helper can use it
         else
