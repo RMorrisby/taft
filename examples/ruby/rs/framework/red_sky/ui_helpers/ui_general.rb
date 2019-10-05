@@ -30,8 +30,8 @@ class RSHelper
         puts "in #{__method__}"
     end
        
-    # Simplen method to show that @help can access the browser
-    def do_google_stuff(term)
+    # Simple method to show that @help can access the browser
+    def enter_google_term(term)
         googleSearch.search_term = term
         puts "@help set term"
     end

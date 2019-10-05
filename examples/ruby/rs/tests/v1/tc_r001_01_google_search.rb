@@ -43,7 +43,8 @@ class TC_R001_01_GOOGLE_SEARCH < Test::Unit::TestCase
 
         puts "Will now search for '#{term}'"
 
-        googleSearch.search_term = term
+        #googleSearch.search_term = term
+        @help.enter_google_term(term) # use @help to set the field, demonstrating that this can be done outside the test
         googleSearch.click_search_button
 
 
