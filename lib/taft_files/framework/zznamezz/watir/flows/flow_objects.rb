@@ -238,8 +238,6 @@ end
 # TODO still want link to be valid here? What about FlowLink?
 class FlowField
 
-  include XXabbrevupperxxHelper
-
   attr_accessor :name, :type, :operation, :mandatory, :size, :custom_valid_value_definition, :custom_invalid_value_definition
 
   def initialize(name, type = :string, operation = :write, mandatory = true, size = nil, custom_valid_value_definition = nil, custom_invalid_value_definition = nil)
@@ -382,7 +380,7 @@ end
 # A class defining a verification step
 class FlowVerify
 
-  include Minitest::Assertions
+  include Test::Unit::Assertions
 
   attr_accessor :expected, :value_or_regex, :flow_field
   # expected is a boolean for whether or not the verification is expected to succeed or fail

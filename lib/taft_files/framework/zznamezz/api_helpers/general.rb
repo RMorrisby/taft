@@ -5,26 +5,11 @@ require "avro"
 require "csv"
 require "net/ssh"
 require "net/sftp"
+require "more_ruby"
 
 
 class XXabbrevupperxxHelper
     include Test::Unit::Assertions
-    include FrameworkHelpers
-
-    # initialize and method_missing are necessary for for allowing this class to access outside methods
-    attr_accessor :xxabbrevxx_context
-    def initialize(xxabbrevxx_context)
-        @xxabbrevxx_context = xxabbrevxx_context
-    end
-
-    def method_missing(meth, *args)
-        case meth.to_s
-        when /^xxabbrevxx/
-            @xxabbrevxx_context.send(meth, *args)
-        else
-            super
-        end
-    end
 
     # Reads in a file of CSV test data, e.g for use in data-driven tests
     def read_csv_test_data(filename)

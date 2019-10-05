@@ -5,6 +5,14 @@ class Page
   attr_accessor :browser
   attr_accessor :field_parameters_array # stores parameters of each field added to the page
 
+  # Name : the name of this page, e.g. rsHomepage
+  # Field : the field used to determine if the page is displayed. More precisely,
+  # the name of the method that accesses the field. E.g. if the page has a field called 'page_title' 
+  # defined, then its accessor method 'page_title_field' will have been generated .
+  # If the displayed? check is against an expected value, specify the field name corresponding to 
+  # the read-method (e.g. page_title), and specify the value (String or Regexp).
+  # If the displayed? check is for a field to exist, specify the field's accessor method name 
+  # (e.g. page_title_field), and keep value nil.
   def initialize(name, field, value = nil)
     @name = name
     @displayed_field = field
@@ -12,27 +20,27 @@ class Page
     @field_parameters_array = []
   end
 
-  # When initialising, if the displayed? check is for a field to exist, specify the base field method name (e.g. page_title_field)
-  # If the displayed? check is against an expected value, specify the field name corresponding to the read-method (e.g. page_title)
   def displayed?(wait = true)
     displayed = false
-        puts "in displayed? for page #{@name}"
-        if wait
-          puts "will wait for page to be loaded"
-          wait_until_displayed
-        end
-        puts "about to send to #{@displayed_field.to_sym.inspect}"
-        begin
-          field_or_value = self.send(@displayed_field.to_sym)
-        rescue Watir::Exception::UnknownObjectException
-          # cannot find the field on the page
-          # do nothing, displayed will stay false
-        rescue Selenium::WebDriver::Error::StaleElementReferenceError
-          # TODO : fix! wait then call displayed? again?
-          puts "hit StaleElementReferenceError for page #{@name}"
-        end
-        puts "field_or_value retrieved is of class #{field_or_value.class}"
-        p field_or_value
+    puts "in displayed? for page #{@name}"
+    if wait
+      puts "will wait for page to be loaded"
+      wait_until_displayed
+    end
+    
+    puts "about to send to #{@displayed_field.to_sym.inspect}"
+    begin
+      field_or_value = self.send(@displayed_field.to_sym)
+    rescue Watir::Exception::UnknownObjectException
+      # cannot find the field on the page
+      # do nothing, displayed will stay false
+    rescue Selenium::WebDriver::Error::StaleElementReferenceError
+      # TODO : fix! wait then call displayed? again?
+      puts "hit StaleElementReferenceError for page #{@name}"
+    end
+
+    puts "field_or_value retrieved is of class #{field_or_value.class}"
+    p field_or_value
     if @displayed_value == nil
       displayed = true if field_or_value.exists?
     else
@@ -70,7 +78,7 @@ class Page
   # E.g. the supplied page_object represents part of a panel/page that is common to several pages
   def add_page(page_object)
     page_object.field_parameters_array.each do |field_parameters|
-      add_field(field_parameters[0], field_parameters[1], field_parameters[2], field_parameters[3]))
+      add_field(field_parameters[0], field_parameters[1], field_parameters[2], field_parameters[3])
     end
   end
 

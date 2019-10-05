@@ -1,5 +1,10 @@
 # Class that holds definitions for all of the pages in ZZnamezz
 # These can be used to determine if the browser is currently displaying that page
+#
+# Field types :
+# Use :text_field instead of :input if it's a text-field
+# Use :button instead of :input if it's a button
+# Otherwise, use the actual HTML element type
 
 require_relative 'page_objects'
 
@@ -69,7 +74,7 @@ class XXabbrevupperxxPages
 
   def add_page(page)
     page.browser = @browser # set the browser object for each page
-    # TODO have only one browser object (here in XXabbrevupperPages), and have each page know how to find it, instead of taking
+    # TODO have only one browser object (here in XXabbrevupperxxPages), and have each page know how to find it, instead of taking
     # their own copy of the object
     @pages << page
     @page_names << page.name

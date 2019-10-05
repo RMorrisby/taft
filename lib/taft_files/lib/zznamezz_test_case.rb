@@ -5,7 +5,7 @@
 # should implement their own methods and call super within them to trigger these common
 # setup/teardown methods at the right time.
 
-$LOAD_PATH.unshift File.dirname(__FILE__) + "/..")
+$LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__) + "/.."))
 
 gem 'test-unit'
 require 'test/unit'
@@ -13,9 +13,10 @@ require 'tmpdir'
 require 'time'
 require 'fileutils'
 require 'timeout'
+require 'watir'
 
 # Config
-require 'config/zznamezz_config'
+require 'config/zznamezz_config.rb'
 
 # Helpers
 require 'framework/zznamezz.rb'
@@ -47,15 +48,16 @@ module ZZnamezzTestCase
     @@defined_pages = {}
 
     def store_page(page_symbol, page_object)
-      @@defined_pages[page_symbol] = page_object
+        puts "Page #{page_symbol} stored"
+        @@defined_pages[page_symbol] = page_object
     end
 
     def page_stored?(page_symbol)
-      @@defined_pages.keys.include?(page_symbol)
+        @@defined_pages.keys.include?(page_symbol)
     end
 
     def get_stored_page(page_symbol)
-      @@defined_pages[page_symbol]
+        @@defined_pages[page_symbol]
     end
 
     # E.g. calling homepage.displayed? from a test script :
@@ -72,18 +74,10 @@ module ZZnamezzTestCase
       when /^browser$/ # TODO need better way of making browser visible to the framework
         browser
       when /^xxabbrevxx/i
-        #      puts "hompage exists? #{self.instance_variable_defined?(name)}" # #{defined? homepage} doesn't work #
-        # instance_variable_defined? isn't liked here
-        #            puts "hompage exists? #{self.respond_to?(name)} #{respond_to?(name)}"
         stored = page_stored?(name)
-#        puts "Page #{name} stored? #{stored}"
         if stored
           page = get_stored_page(name)
         else          
-#          derived_name = name.to_s.gsub(/^xxabbrevxx/, "Ceres")
-##          page = CeresCustom::Homepage.new
-#          page = eval("CeresCustom::#{derived_name}.new")
-          
           page = @page.find(name.to_s) 
           store_page(name, page)
         end
@@ -93,52 +87,20 @@ module ZZnamezzTestCase
       end
     end
 
-#     # By default, unknown methods (e.g. xxabbrevupperxxPage names) are sent to the different contexts 
-#     # for resolution. This allows pages to be accessed as xxabbrevxxHomePage rather than
-#     # @xxabbrevxx_context.xxabbrevxxHomePage
-#     def method_missing(meth, *args)
-#         case meth.to_s
-#         when /^xxabbrevxx/
-#             @xxabbrevxx_context.send(meth, *args)
-# #        when /^some_other_app/
-# #            @some_other_app_context.send(meth, *args)
-#         else
-#             super
-#         end
-#     end
-
-
     if $WRITE_RESULTS # supplied from invokation
         WRITE_RESULTS = true
     else
         WRITE_RESULTS = false
     end
 
-    # Close the current browser and log in again
-    def re_login
-        browser.close
-
-        new_browser_on_login_page
-        # Reinitialise the contexd and @help
-        reinitialisexxabbrevupperxxContext(browser)
-    end
-
     # Connect to yyrawnameyy and reinitialise the context, etc.
     def xxabbrevxx_login(url = ZZnamezzConfig::SERVER[:zznamezz_url])
-        puts url
-        new_browser_on_login_page(url)
-        reinitialisexxabbrevupperxxContext(browser)
+        browser = @help.new_browser_at_url(url)
+        load_pages(browser)
     end
 
-    # Reinitialise xxabbrevupperxx context only
-    def reinitialisexxabbrevupperxxContext(new_browser)
-        @xxabbrevxx_context = ZZnamezz::Context.new(new_browser)
-        @help = xxabbrevupperxxHelper.new(@xxabbrevxx_context)
-    end
-
-    # Return to the previous xxabbrevupperxx session
-    def return_to_xxabbrevxx
-        self.browser = @xxabbrevxx_context.browser
+    def load_pages(browser)
+        @page = xxabbrevupperxxPages.new(browser) # cannot have pages without a browser object
     end
 
     # Close the current browser
@@ -150,21 +112,35 @@ module ZZnamezzTestCase
         if browser.exists? && ((ZZnamezzConfig::CLOSE_BROWSER_AFTER_TEST && passed?) || ZZnamezzConfig::FORCE_CLOSE_BROWSER_AFTER_TEST)
             browser.close
             $browsers.delete_at($current_browser_position - 1) # array indexing
-            self.browser = $browsers[-1] # set browser to the last one that is still in the array
+            browser = $browsers[-1] # set browser to the last one that is still in the array
         end
     end
 
     def close_all_browsers
         if (ZZnamezzConfig::CLOSE_BROWSER_AFTER_TEST && passed?) || ZZnamezzConfig::FORCE_CLOSE_BROWSER_AFTER_TEST
             until $browsers.empty?
-                self.browser = $browsers.shift
+                browser = $browsers.shift
                 browser.close
             end
         end
     end
 
+
+    @@browser = nil
+
+    def browser
+        @@browser
+    end
+
+    def browser=(b)
+        @@browser = b
+    end
+    alias set_browser browser= # note : calls of "browser = " do not work, calls of "browser=" do
+
     # Ensure that every test (that wants one) has a browser that is already logged in to the system
     def setup
+
+        @help = xxabbrevupperxxHelper.new
 
         Watir.always_locate = true # default is true; setting to false speeds up Watir to a degree
 
@@ -172,7 +148,7 @@ module ZZnamezzTestCase
         @test_start_time = Time.now
 
         # Get the directory that the specific test lives in, so that it can be included in the results file
-        @test_file_dir = @test_file.split(File::SEPARATOR)[-2]
+        @test_file_dir = @test_file.split(File::SEPARATOR)[-2] if @test_file
 
         # Select default certificate if none is configured
         @certificate ||= :regular
@@ -187,7 +163,7 @@ module ZZnamezzTestCase
             xxabbrevxx_login
         elsif (@initialBrowser == :none || @initialBrowser == nil)
             browser = nil
-            reinitialisexxabbrevupperxxContext(browser)
+            #reinitialisexxabbrevupperxxContext(browser)
         end
 
     end # end setup
@@ -228,8 +204,7 @@ module ZZnamezzTestCase
                     puts "Notes : #{notes}"
                 end # end unless passed?
 
-                close_all_browsers
-
+                
                 # Write to the results file
                 begin
                     File.open(ZZnamezzConfig::RESULTS_CSV, "a") do |f|
@@ -241,6 +216,9 @@ module ZZnamezzTestCase
                     puts "Had to rescue from writing results to file #{ZZnamezzConfig::RESULTS_CSV}"
                 end
             end # end if WRITE_RESULTS
+            
+            close_all_browsers
+
         rescue Timeout::Error => t_error
             puts "Timeout::Error :"
             puts t_error

@@ -7,7 +7,7 @@
 require_relative 'flow_objects'
 require_relative 'xxabbrevxx_flow_names'
 
-class CeresFlows
+class XXabbrevupperxxFlows
 
   attr_accessor :flows # array of Flow objects
   attr_accessor :flow_names # array of names of known Flow objects
