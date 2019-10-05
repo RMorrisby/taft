@@ -39,21 +39,17 @@ class RSPages
 
   def self.add_page(page)
     page.browser = @@browser # set the browser object for each page
-    # TODO have only one browser object (here in XXabbrevupperPages), and have each page know how to find it, instead of taking
+    # TODO have only one browser object (here in RSPages), and have each page know how to find it, instead of taking
     # their own copy of the object
     @@pages << page
     @@page_names << page.name
   end
 
-  # TODO needed?
-  def ==(o)
-  end
-
-  # TODO needed?
-  def to_s
+  # Outputs info on the pages currently stored
+  def self.info
     s = ""
     s += "#{@@pages.size} pages defined. Names :"
-    @page_names.each {|f| s += "\n#{f}" }
+    @@page_names.each {|f| s += "\n#{f}" }
     s
   end
 
