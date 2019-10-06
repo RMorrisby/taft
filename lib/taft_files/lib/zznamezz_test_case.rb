@@ -73,9 +73,9 @@ module ZZnamezzTestCase
     end
 
     def load_pages(browser)
+        @browser_has_been_opened = true
         xxabbrevupperxxPages.make_pages(browser) # cannot have pages without a browser object
         $browsers << browser
-        @browser_has_been_opened = true
     end
 
     # Close the current browser

@@ -8,5 +8,4 @@ require "red_sky/api_helpers/rest"
 require "red_sky/ui_helpers/ui_general"
 
 require "red_sky/watir/pages/rs_pages"
-require "red_sky/watir/flows/rs_flows"
 require "red_sky/watir/custom/all"

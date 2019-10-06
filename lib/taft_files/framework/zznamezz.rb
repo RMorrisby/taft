@@ -8,5 +8,4 @@ require "zznamezz/api_helpers/rest"
 require "zznamezz/ui_helpers/ui_general"
 
 require "zznamezz/watir/pages/xxabbrevxx_pages"
-require "zznamezz/watir/flows/xxabbrevxx_flows"
 require "zznamezz/watir/custom/all"
