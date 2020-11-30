@@ -199,6 +199,8 @@ class Taft
             entries = Dir.entries(dest_base_folder)
             entries.delete(".")
             entries.delete("..")
+			entries.delete(".git")
+			entries.delete(".gitignore")
             entries.each do |f|
                 f = File.expand_path(f)
                 pd "Now looking at #{f}; is dir? #{Dir.exists?(f)}"
