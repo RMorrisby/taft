@@ -54,7 +54,7 @@ module ZZnamezzTestCase
         when /^browser$/
             browser
         when /^xxabbrevxx/i
-            RSPages.find(name.to_s) # return the page so that the test can use it
+            XXabbrevupperxxPages.find(name.to_s) # return the page so that the test can use it
         else
             super
         end

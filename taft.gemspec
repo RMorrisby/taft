@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'taft'
-  s.version     = '0.2.1'
+  s.version     = '0.2.2'
   s.licenses    = ['MIT']
   s.summary     = "Test Automation Framework Template (TAFT)"
   s.description = "TAFT will deploy/install a skeleton code framework for the automated testing of applications with APIs and/or web-UIs"
