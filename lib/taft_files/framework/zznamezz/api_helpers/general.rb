@@ -28,7 +28,7 @@ class XXabbrevupperxxHelper
 
     # Reads in a file of CSV test data, e.g for use in data-driven tests
     def read_csv_test_data(filename)
-        path = File.join(File.dirname(File.expand_path(__FILE__)) + "/../../../../tests/data", filename)
+        path = File.join(File.dirname(File.expand_path(__FILE__)) + "/../../../tests/data", filename)
         read_csv_data_from_file(path)
     end
 
@@ -43,7 +43,7 @@ class XXabbrevupperxxHelper
 
     # Reads in a JSON schema
     def read_json_schema(schema_filename)
-        path = File.join(File.dirname(File.expand_path(__FILE__)) + "/../../../../tests/data", schema_filename)
+        path = File.join(File.dirname(File.expand_path(__FILE__)) + "/../../../tests/data", schema_filename)
         data = []
         File.open(path, "r") do |f|
             data = f.readlines
